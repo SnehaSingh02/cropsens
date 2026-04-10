@@ -1,16 +1,8 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  CropSense AI — Gemini API with model cascade
-//  Tries models in order; falls back on 429 (quota) or 503 (overload).
-// ─────────────────────────────────────────────────────────────────────────────
-
 const BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 const MODELS = [
-  "gemini-2.0-flash",   // fast, no thinking — primary
-  "gemini-2.5-flash",   // fallback (thinking disabled via thinkingBudget:0)
+  "gemini-2.0-flash",
+  "gemini-2.5-flash",
 ];
-
-
-
 
 const PROMPT = `You are an expert plant pathologist and soil scientist specializing in Indian agriculture.
 Analyze this crop image carefully. Respond ONLY with a valid JSON object — no markdown, no backticks, nothing else.
@@ -52,8 +44,6 @@ Rules:
 - Always include the soil object with all fields, even for healthy crops
 - Never omit any field`;
 
-
-// ── Image compression ─────────────────────────────────────────────────────────
 function compressImage(base64, mime) {
   return new Promise((resolve) => {
     const img = new Image();
@@ -63,7 +53,8 @@ function compressImage(base64, mime) {
       const w = Math.round(img.width * scale);
       const h = Math.round(img.height * scale);
       const canvas = document.createElement("canvas");
-      canvas.width = w; canvas.height = h;
+      canvas.width = w;
+      canvas.height = h;
       canvas.getContext("2d").drawImage(img, 0, 0, w, h);
       const outMime = mime === "image/png" ? "image/png" : "image/jpeg";
       const out = canvas.toDataURL(outMime, 0.82);
@@ -74,11 +65,7 @@ function compressImage(base64, mime) {
   });
 }
 
-// ── Main export ───────────────────────────────────────────────────────────────
-// onStatus({ type: "analyzing" | "waiting", secondsLeft? })
-export async function analyzeCrop(base64, mime, cropName, onStatus = () => { }) {
-
-  // Collect all non-empty keys from .env
+export async function analyzeCrop(base64, mime, cropName, onStatus = () => {}) {
   const keys = [
     process.env.REACT_APP_GEMINI_KEY_1,
     process.env.REACT_APP_GEMINI_KEY_2,
@@ -104,7 +91,7 @@ export async function analyzeCrop(base64, mime, cropName, onStatus = () => { }) 
     generationConfig: {
       temperature: 0.1,
       maxOutputTokens: 2048,
-      thinkingConfig: { thinkingBudget: 0 }, // disable reasoning for speed
+      thinkingConfig: { thinkingBudget: 0 },
     },
     safetySettings: [
       { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
@@ -114,8 +101,6 @@ export async function analyzeCrop(base64, mime, cropName, onStatus = () => { }) 
     ],
   });
 
-  // ── Key × Model cascade ───────────────────────────────────────────────────
-  // Try every key with every model. Skip on 429 (quota) or 503 (overload).
   let res = null;
   let usedKey = null;
   let usedModel = null;
@@ -131,22 +116,20 @@ export async function analyzeCrop(base64, mime, cropName, onStatus = () => { }) 
           body,
         });
       } catch {
-        continue; // network error — try next combo
+        continue;
       }
 
       if (res.status === 429 || res.status === 503) {
-        console.warn(`⚠️ Key …${key.slice(-6)} / ${model} → ${res.status}. Trying next…`);
         res = null;
         continue;
       }
 
       usedKey = key;
       usedModel = model;
-      break outer; // got a usable response (200 or real error like 400/403)
+      break outer;
     }
   }
 
-  // All keys + models exhausted → wait 62s then retry with first key + model
   if (!res) {
     const WAIT = 62;
     for (let s = WAIT; s > 0; s--) {
@@ -169,10 +152,8 @@ export async function analyzeCrop(base64, mime, cropName, onStatus = () => { }) 
     }
   }
 
-  console.log(`✅ Key …${usedKey?.slice(-6)} / ${usedModel}`);
+  console.log(`Key …${usedKey?.slice(-6)} / ${usedModel}`);
 
-
-  // ── Other errors ──────────────────────────────────────────────────────────
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
     const msg = data?.error?.message || "";
@@ -181,12 +162,8 @@ export async function analyzeCrop(base64, mime, cropName, onStatus = () => { }) 
     throw new Error(msg || `Gemini error (${res.status}). Please try again.`);
   }
 
-
-  // ── Parse response ────────────────────────────────────────────────────────
   const data = await res.json();
 
-  // Thinking models (gemini-3-flash-preview) return reasoning in parts[0] with
-  // {thought: true}. Filter those out and join the remaining text parts.
   const parts = data?.candidates?.[0]?.content?.parts || [];
   const text = parts
     .filter((p) => !p.thought)
@@ -200,12 +177,8 @@ export async function analyzeCrop(base64, mime, cropName, onStatus = () => { }) 
     throw new Error("AI returned empty response. Please try again with a different photo.");
   }
 
-
-  // Extract the JSON object from the response (handles preamble text and
-  // truncation from thinking models using their reasoning budget)
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
-    console.error("No JSON found in response:", text.slice(0, 300));
     throw new Error("AI returned unexpected format. Please try again.");
   }
   try {
@@ -215,7 +188,6 @@ export async function analyzeCrop(base64, mime, cropName, onStatus = () => { }) 
     }
     return parsed;
   } catch {
-    console.error("JSON parse failed:", jsonMatch[0].slice(0, 300));
     throw new Error("AI returned unexpected format. Please try again.");
   }
 }

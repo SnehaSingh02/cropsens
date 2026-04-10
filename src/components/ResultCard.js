@@ -6,7 +6,6 @@ function Label({ text }) {
   return <p className="section-label mb-3">{text}</p>;
 }
 
-// ── Urgency banner — big and color-coded ─────────────────────────────────────
 const URGENCY_STYLE = {
   High:   { bg: "#fef2f2", border: "#fca5a5", text: "#991b1b", icon: "🔴", label: "High Priority" },
   Medium: { bg: "#fffbeb", border: "#fcd34d", text: "#92400e", icon: "🟡", label: "Medium Priority" },
@@ -36,7 +35,6 @@ function UrgencyBanner({ severity, urgency, hi }) {
   );
 }
 
-// ── Symptom chips — subtle rainbow tint ──────────────────────────────────────
 const CHIP_COLORS = [
   { bg: "#fef9c3", text: "#854d0e" },
   { bg: "#fce7f3", text: "#9d174d" },
@@ -65,7 +63,6 @@ function SymptomChips({ symptoms }) {
   );
 }
 
-// ── Cause callout ────────────────────────────────────────────────────────────
 function CauseBox({ cause, hi }) {
   return (
     <div className="flex gap-3 items-start bg-gray-50 rounded-2xl px-4 py-3.5 border border-gray-100">
@@ -80,7 +77,6 @@ function CauseBox({ cause, hi }) {
   );
 }
 
-// ── Soil Advisory Card ────────────────────────────────────────────────────────
 const NUTRIENT_COLORS = [
   { bg: "#fef3c7", text: "#92400e" },
   { bg: "#dbeafe", text: "#1e40af" },
@@ -103,7 +99,6 @@ function SoilAdvisoryCard({ soil, hi }) {
       style={{ background: "#fafaf7", border: "2px solid #d6d3c4" }}
       className="rounded-3xl p-6 lg:p-8 mt-6 lg:mt-8"
     >
-      {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <span className="text-4xl">🌱</span>
         <div>
@@ -118,7 +113,6 @@ function SoilAdvisoryCard({ soil, hi }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 
-        {/* pH Range */}
         <div
           style={{ background: "#fff8e7", border: "1.5px solid #fde68a" }}
           className="rounded-2xl p-4 flex flex-col gap-2"
@@ -133,7 +127,6 @@ function SoilAdvisoryCard({ soil, hi }) {
           {phTip && <p className="text-sm text-amber-800 leading-relaxed">{phTip}</p>}
         </div>
 
-        {/* Deficient Nutrients */}
         <div
           style={{ background: "#f0fdf4", border: "1.5px solid #bbf7d0" }}
           className="rounded-2xl p-4 flex flex-col gap-2"
@@ -159,7 +152,6 @@ function SoilAdvisoryCard({ soil, hi }) {
           </div>
         </div>
 
-        {/* Soil Treatment */}
         <div
           style={{ background: "#fef2f2", border: "1.5px solid #fecaca" }}
           className="rounded-2xl p-4 flex flex-col gap-2"
@@ -173,7 +165,6 @@ function SoilAdvisoryCard({ soil, hi }) {
           <p className="text-sm text-red-900 leading-relaxed">{treatment}</p>
         </div>
 
-        {/* Next Season */}
         <div
           style={{ background: "#eff6ff", border: "1.5px solid #bfdbfe" }}
           className="rounded-2xl p-4 flex flex-col gap-2"
@@ -192,7 +183,6 @@ function SoilAdvisoryCard({ soil, hi }) {
   );
 }
 
-// ── Voice button ─────────────────────────────────────────────────────────────
 function VoiceButton({ result, lang, cropName }) {
   const { speak, stop, speaking, supported } = useVoice();
   if (!supported) return null;
@@ -230,7 +220,6 @@ function VoiceButton({ result, lang, cropName }) {
   );
 }
 
-// ── Main export ───────────────────────────────────────────────────────────────
 export default function ResultCard({ result, lang, crop, imgSrc, onReset }) {
   const { stop } = useVoice();
   const hi      = lang === "hi";
@@ -251,7 +240,6 @@ export default function ResultCard({ result, lang, crop, imgSrc, onReset }) {
     <div className="fade-up max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 py-6 lg:py-10">
       <div className="lg:grid lg:grid-cols-2 lg:gap-10 xl:gap-16">
 
-        {/* ── Left ── */}
         <div className="space-y-4 lg:space-y-6">
 
           {imgSrc && (
@@ -264,7 +252,6 @@ export default function ResultCard({ result, lang, crop, imgSrc, onReset }) {
             </div>
           )}
 
-          {/* Diagnosis card */}
           <div className="scan-card">
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
               <Label text={hi ? "निदान" : "Diagnosis"} />
@@ -285,7 +272,6 @@ export default function ResultCard({ result, lang, crop, imgSrc, onReset }) {
               )}
             </div>
 
-            {/* Confidence */}
             <div className="flex justify-between text-sm text-gray-400 mb-2">
               <span className="font-medium">{hi ? "AI विश्वसनीयता" : "AI Confidence"}</span>
               <span className="font-bold text-gray-700">{result.confidence}%</span>
@@ -303,20 +289,16 @@ export default function ResultCard({ result, lang, crop, imgSrc, onReset }) {
           </button>
         </div>
 
-        {/* ── Right ── */}
         <div className="mt-4 lg:mt-0 space-y-4 lg:space-y-5">
 
           {!invalid && (
             <>
-              {/* Urgency banner — prominent */}
               {!healthy && (
                 <UrgencyBanner severity={result.severity} urgency={result.urgency} hi={hi} />
               )}
 
-              {/* Cause callout */}
               {!healthy && <CauseBox cause={cause} hi={hi} />}
 
-              {/* Symptoms */}
               {symptoms.length > 0 && (
                 <div className="scan-card">
                   <Label text={hi ? "लक्षण" : "Symptoms"} />
@@ -324,7 +306,6 @@ export default function ResultCard({ result, lang, crop, imgSrc, onReset }) {
                 </div>
               )}
 
-              {/* Treatment & Prevention */}
               {!healthy ? (
                 <div className="scan-card space-y-5">
                   <div>
@@ -361,7 +342,6 @@ export default function ResultCard({ result, lang, crop, imgSrc, onReset }) {
 
       </div>
 
-      {/* 🌱 Soil Advisory — full width below the two columns */}
       {!invalid && result.soil && (
         <SoilAdvisoryCard soil={result.soil} hi={hi} />
       )}

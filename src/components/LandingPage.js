@@ -41,11 +41,11 @@ export default function LandingPage({ lang, onStart }) {
   return (
     <div className="fade-up">
 
-      {/* ── Hero — desktop: two columns, mobile: stacked ── */}
+
       <section style={{ background: "#0A2E23" }} className="px-6 sm:px-10 lg:px-0 py-16 lg:py-0">
         <div className="max-w-7xl mx-auto lg:flex lg:items-stretch lg:min-h-[520px]">
 
-          {/* Left — text */}
+
           <div className="lg:flex-1 lg:flex lg:flex-col lg:justify-center lg:py-20 lg:pr-16 text-center lg:text-left">
             <span
               style={{ background: "#0F6E56", color: "#9FE1CB" }}
@@ -93,7 +93,7 @@ export default function LandingPage({ lang, onStart }) {
             </div>
           </div>
 
-          {/* Right — visual panel (desktop only) */}
+
           <div
             className="hidden lg:flex flex-col justify-center lg:w-96 xl:w-[480px] px-12 py-16"
             style={{ background: "rgba(255,255,255,0.04)", borderLeft: "1px solid rgba(255,255,255,0.08)" }}
@@ -116,7 +116,7 @@ export default function LandingPage({ lang, onStart }) {
         </div>
       </section>
 
-      {/* ── Stats bar ── */}
+
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto grid grid-cols-4 divide-x divide-gray-100">
           {STATS.map((s, i) => (
@@ -128,10 +128,10 @@ export default function LandingPage({ lang, onStart }) {
         </div>
       </div>
 
-      {/* ── Features + How it works (main content area) ── */}
+
       <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10">
 
-        {/* Features grid */}
+
         <section className="py-10 lg:py-14">
           <p className="section-label mb-6">{hi ? "विशेषताएं" : "Features"}</p>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -148,7 +148,7 @@ export default function LandingPage({ lang, onStart }) {
           </div>
         </section>
 
-        {/* How it works — mobile only (desktop shown in hero panel) */}
+
         <section className="pb-10 lg:hidden">
           <p className="section-label mb-4">{hi ? "कैसे काम करता है" : "How it works"}</p>
           <div className="card p-0 overflow-hidden bg-white">
@@ -164,7 +164,7 @@ export default function LandingPage({ lang, onStart }) {
           </div>
         </section>
 
-        {/* Bottom CTA */}
+
         <section className="pb-14 lg:pb-20 lg:flex lg:items-center lg:justify-between lg:gap-8">
           <div className="hidden lg:block">
             <p className="text-xl font-bold text-gray-800 mb-1">

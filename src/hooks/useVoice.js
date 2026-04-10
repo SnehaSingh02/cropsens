@@ -1,8 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  useVoice — Web Speech API hook for Hindi/English readout
-//  Uses the browser's built-in SpeechSynthesis — no API key needed.
-// ─────────────────────────────────────────────────────────────────────────────
-
 import { useState, useEffect, useCallback, useRef } from "react";
 
 export function useVoice() {
@@ -24,7 +19,6 @@ export function useVoice() {
     utt.rate  = 0.88;
     utt.pitch = 1;
 
-    // Pick the best available voice for the language
     const voices = window.speechSynthesis.getVoices();
     const match  = voices.find((v) => v.lang.startsWith(lang.split("-")[0]));
     if (match) utt.voice = match;
@@ -45,9 +39,6 @@ export function useVoice() {
   return { speak, stop, speaking, supported };
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Build the voice script from a result object
-// ─────────────────────────────────────────────────────────────────────────────
 export function buildScript(result, lang, cropName) {
   const hi = lang === "hi";
 

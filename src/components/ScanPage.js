@@ -3,7 +3,6 @@ import { CROPS } from "../constants/crops";
 import { analyzeCrop } from "../utils/api";
 import ResultCard from "./ResultCard";
 
-// ── Loading screen ───────────────────────────────────────────────────────────────
 function Loader({ lang, status }) {
   const hi      = lang === "hi";
   const waiting = status?.type === "waiting";
@@ -53,8 +52,6 @@ function Loader({ lang, status }) {
   );
 }
 
-
-// ── Error screen ────────────────────────────────────────────────────────────
 function ErrorScreen({ msg, lang, onRetry }) {
   const hi = lang === "hi";
   const isKeyError = msg.includes("API key") || msg.includes("console.anthropic");
@@ -90,7 +87,6 @@ function ErrorScreen({ msg, lang, onRetry }) {
   );
 }
 
-// ── History bar ─────────────────────────────────────────────────────────────
 function HistoryBar({ history, lang, onSelect }) {
   if (history.length === 0) return null;
   const hi = lang === "hi";
@@ -106,14 +102,13 @@ function HistoryBar({ history, lang, onSelect }) {
   );
 }
 
-// ── Main ScanPage ───────────────────────────────────────────────────────────
 export default function ScanPage({ lang }) {
   const [crop,     setCrop]    = useState(null);
   const [imgSrc,   setImgSrc]  = useState("");
   const [imgB64,   setImgB64]  = useState("");
   const [imgMime,  setImgMime] = useState("image/jpeg");
   const [imgReady, setImgReady]= useState(false);
-  const [status,   setStatus]  = useState("idle"); // idle | loading | result | error
+  const [status,   setStatus]  = useState("idle");
   const [result,   setResult]  = useState(null);
   const [errMsg,   setErrMsg]  = useState("");
   const [history,  setHistory] = useState([]);
@@ -125,7 +120,6 @@ export default function ScanPage({ lang }) {
   const isAnalyzing = useRef(false);
   const hi = lang === "hi";
 
-  // ── Load file ─────────────────────────────────────────────────────────────
   const loadFile = useCallback((file) => {
     if (!file || !file.type.startsWith("image/")) return;
     setImgMime(file.type);
@@ -138,7 +132,6 @@ export default function ScanPage({ lang }) {
     reader.readAsDataURL(file);
   }, []);
 
-  // ── Drag & drop ───────────────────────────────────────────────────────────
   const handleDragOver  = useCallback((e) => { e.preventDefault(); setDragOver(true); }, []);
   const handleDragLeave = useCallback(() => setDragOver(false), []);
   const handleDrop      = useCallback((e) => {
@@ -146,7 +139,6 @@ export default function ScanPage({ lang }) {
     loadFile(e.dataTransfer.files[0]);
   }, [loadFile]);
 
-  // ── Analyze ───────────────────────────────────────────────────────────────
   const handleAnalyze = async () => {
     if (!imgB64 || !crop || isAnalyzing.current) return;
     isAnalyzing.current = true;
@@ -165,7 +157,6 @@ export default function ScanPage({ lang }) {
     }
   };
 
-  // ── Reset ─────────────────────────────────────────────────────────────────
   const reset = () => {
     setCrop(null); setImgSrc(""); setImgB64(""); setImgMime("image/jpeg");
     setImgReady(false); setStatus("idle"); setResult(null); setErrMsg("");
@@ -173,13 +164,11 @@ export default function ScanPage({ lang }) {
     if (fileRef.current)   fileRef.current.value   = "";
   };
 
-  // ── Load from history ─────────────────────────────────────────────────────
   const loadHistory = (h) => {
     setCrop(h.crop); setImgSrc(h.imgSrc);
     setResult(h.result); setStatus("result");
   };
 
-  // ── Special states ────────────────────────────────────────────────────────
   if (status === "loading") return <Loader lang={lang} status={loaderStatus} />;
   if (status === "result" && result)
     return <ResultCard result={result} lang={lang} crop={crop} imgSrc={imgSrc} onReset={reset} />;
@@ -192,14 +181,10 @@ export default function ScanPage({ lang }) {
     <div className="fade-up">
       <HistoryBar history={history} lang={lang} onSelect={loadHistory} />
 
-      {/* ── Desktop: two-column | Mobile: stacked ── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 py-6 lg:py-10">
         <div className="lg:grid lg:grid-cols-2 lg:gap-10 xl:gap-16">
 
-          {/* ── Left column: Step 1 + Step 2 ── */}
           <div className="space-y-6 lg:space-y-8">
-
-            {/* Step 1 — Crop selector */}
             <section className="scan-card">
               <div className="flex items-center gap-2.5 mb-4">
                 <div className="step-num">1</div>
@@ -223,7 +208,6 @@ export default function ScanPage({ lang }) {
               </div>
             </section>
 
-            {/* Step 2 — Photo */}
             <section className="scan-card">
               <div className="flex items-center gap-2.5 mb-4">
                 <div className="step-num">2</div>
@@ -292,10 +276,7 @@ export default function ScanPage({ lang }) {
             </section>
           </div>
 
-          {/* ── Right column: Step 3 + preview hint ── */}
           <div className="mt-6 lg:mt-0 space-y-6 lg:space-y-8">
-
-            {/* Step 3 — Analyze */}
             <section className="scan-card">
               <div className="flex items-center gap-2.5 mb-4">
                 <div className={`step-num ${canAnalyze ? "" : "inactive"}`}>3</div>
@@ -321,7 +302,6 @@ export default function ScanPage({ lang }) {
               )}
             </section>
 
-            {/* Desktop info panel — tips */}
             <div className="hidden lg:block scan-card" style={{ background: "#f0fdf8", border: "1px solid #d1fae5" }}>
               <p className="text-xs font-bold text-green-800 uppercase tracking-wide mb-3">
                 {hi ? "💡 टिप्स" : "💡 Tips for best results"}
@@ -345,7 +325,6 @@ export default function ScanPage({ lang }) {
               </ul>
             </div>
 
-            {/* Desktop info panel — what you'll get */}
             <div className="hidden lg:block scan-card">
               <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">
                 {hi ? "📋 आपको क्या मिलेगा" : "📋 What you'll receive"}

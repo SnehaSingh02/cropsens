@@ -3,7 +3,6 @@ import Navbar from "./components/Navbar";
 import LandingPage from "./components/LandingPage";
 import ScanPage from "./components/ScanPage";
 
-// Shows a banner if no Gemini key is set
 function KeyWarningBanner({ lang }) {
   const hasKey = [
     process.env.REACT_APP_GEMINI_KEY_1,
